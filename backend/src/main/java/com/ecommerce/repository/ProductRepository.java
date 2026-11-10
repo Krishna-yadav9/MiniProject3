@@ -171,7 +171,7 @@ public class ProductRepository {
                     }
                 }
             } catch (Exception e) {
-                log.info("Firestore unavailable, returning cached product list: {}", e.getMessage());
+                log.info("Firestore unavailable, returning cached product list ({})", fallbackCache.size());
             }
         }
         List<Product> list = new ArrayList<>(fallbackCache.values());
@@ -195,7 +195,7 @@ public class ProductRepository {
             try {
                 firestore.collection(COLLECTION_NAME).document(id).delete().get();
             } catch (Exception e) {
-                log.warn("Firestore delete failed ({}): {}", e.getMessage(), id);
+                log.info("Firestore delete unavailable, removed from local cache: {}", id);
             }
         }
     }

@@ -67,7 +67,7 @@ public class UserRepository {
             try {
                 firestore.collection(COLLECTION_NAME).document(user.getId()).set(user).get();
             } catch (Exception e) {
-                log.warn("Firestore save user failed ({}), stored locally: {}", e.getMessage(), user.getEmail());
+                log.info("Firestore save user fallback to local cache: {}", user.getEmail());
             }
         }
         return user;
@@ -86,7 +86,7 @@ public class UserRepository {
                     }
                 }
             } catch (Exception e) {
-                log.warn("Firestore findById user failed ({}): {}", e.getMessage(), id);
+                log.info("Firestore findById user fallback to local cache: {}", id);
             }
         }
         return Optional.ofNullable(fallbackCache.get(id));

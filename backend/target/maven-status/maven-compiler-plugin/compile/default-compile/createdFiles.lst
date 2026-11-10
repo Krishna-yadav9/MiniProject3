@@ -1,6 +1,6 @@
 com/ecommerce/dto/CartItemRequest.class
-com/ecommerce/exception/UnauthorizedException.class
 com/ecommerce/model/Order.class
+com/ecommerce/exception/UnauthorizedException.class
 com/ecommerce/exception/BadRequestException.class
 com/ecommerce/model/Cart.class
 com/ecommerce/service/AnalyticsService.class
@@ -13,8 +13,8 @@ com/ecommerce/service/AnalyticsService$ProductAccumulator.class
 com/ecommerce/config/JwtAuthenticationFilter.class
 com/ecommerce/config/CorsConfig.class
 com/ecommerce/exception/GlobalExceptionHandler.class
-com/ecommerce/dto/CategorySalesDTO.class
 com/ecommerce/controller/AuthController.class
+com/ecommerce/dto/CategorySalesDTO.class
 com/ecommerce/service/AuthService.class
 com/ecommerce/controller/AnalyticsController.class
 com/ecommerce/controller/CartController.class

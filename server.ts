@@ -102,7 +102,7 @@ app.use('/api', (req, res) => {
 });
 
 function forwardApiRequest(req: express.Request, res: express.Response, bodyBuffer: Buffer, attempt: number) {
-  const maxAttempts = 20;
+  const maxAttempts = 60;
   const targetUrl = `http://127.0.0.1:${BACKEND_PORT}/api${req.url}`;
 
   const headers: Record<string, string> = {};
@@ -135,7 +135,7 @@ function forwardApiRequest(req: express.Request, res: express.Response, bodyBuff
     if (attempt < maxAttempts) {
       setTimeout(() => {
         forwardApiRequest(req, res, bodyBuffer, attempt + 1);
-      }, 350);
+      }, 500);
     } else {
       console.warn(`[Proxy Error] ${req.method} /api${req.url} failed after ${maxAttempts} attempts: ${err.message}`);
       res.status(503).json({

@@ -12,7 +12,11 @@ export function getStoredToken(): string | null {
   if (clean.toLowerCase().startsWith('bearer ')) {
     clean = clean.substring(7).trim();
   }
-  return clean || null;
+  if (!clean || clean === 'null' || clean === 'undefined' || clean.split('.').length !== 3) {
+    localStorage.removeItem('apex_jwt_token');
+    return null;
+  }
+  return clean;
 }
 
 export function getAuthHeader(customToken?: string | null): Record<string, string> {
@@ -63,12 +67,18 @@ async function request<T>(endpoint: string, options: RequestInit = {}, customTok
       data = await response.text();
     }
 
-    // Catch proxy or HTML errors
-    if (typeof data === 'string' && (data.includes('<html') || data.includes('403 Forbidden') || data.includes('502 Bad Gateway'))) {
+    // Catch gateway / proxy HTML error pages
+    if (typeof data === 'string' && (data.includes('<html') || data.includes('502 Bad Gateway') || data.includes('503 Service Unavailable'))) {
       throw new Error('Backend service is initializing or unreachable. Please verify Spring Boot server status.');
     }
 
     if (!response.ok) {
+      if (response.status === 403) {
+        throw new Error(typeof data === 'object' && data?.message ? data.message : 'Access denied: Admin privileges required.');
+      }
+      if (response.status === 401) {
+        throw new Error(typeof data === 'object' && data?.message ? data.message : 'Authentication required: Please sign in.');
+      }
       const errorMessage = typeof data === 'object' && data?.message
         ? data.message
         : (typeof data === 'string' && data ? data : `Request failed with status ${response.status}`);

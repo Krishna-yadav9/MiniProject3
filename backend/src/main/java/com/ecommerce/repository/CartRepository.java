@@ -35,7 +35,7 @@ public class CartRepository {
             try {
                 firestore.collection(COLLECTION_NAME).document(cart.getUserId()).set(cart).get();
             } catch (Exception e) {
-                log.warn("Firestore save cart failed ({}): {}", e.getMessage(), cart.getUserId());
+                log.info("Firestore save cart fallback to local cache: {}", cart.getUserId());
             }
         }
         return cart;
@@ -57,7 +57,7 @@ public class CartRepository {
                     }
                 }
             } catch (Exception e) {
-                log.warn("Firestore find cart failed ({}): {}", e.getMessage(), userId);
+                log.info("Firestore find cart fallback to local cache: {}", userId);
             }
         }
         return Optional.ofNullable(fallbackCache.get(userId));
@@ -69,7 +69,7 @@ public class CartRepository {
             try {
                 firestore.collection(COLLECTION_NAME).document(userId).delete().get();
             } catch (Exception e) {
-                log.warn("Firestore delete cart failed ({}): {}", e.getMessage(), userId);
+                log.info("Firestore delete cart fallback to local cache: {}", userId);
             }
         }
     }

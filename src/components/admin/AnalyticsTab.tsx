@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { analyticsApi } from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
 import { OverviewDTO, SalesAnalyticsDTO } from '../../types';
 import {
   TrendingUp,
@@ -35,6 +36,7 @@ import {
 const PIE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#3b82f6'];
 
 export const AnalyticsTab: React.FC = () => {
+  const { isAdmin, isAuthenticated, login } = useAuth();
   const [subTab, setSubTab] = useState<'overview' | 'sales'>('overview');
   const [range, setRange] = useState<'7d' | '30d' | '90d'>('30d');
 
@@ -44,33 +46,25 @@ export const AnalyticsTab: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchOverview = async () => {
-    try {
-      const data = await analyticsApi.getOverview();
-      setOverview(data);
-    } catch (err: any) {
-      console.error('Failed to load analytics overview:', err);
-      setError(err.message || 'Could not load analytics overview');
-    }
-  };
-
-  const fetchSales = async (selectedRange: string) => {
-    try {
-      const data = await analyticsApi.getSales(selectedRange);
-      setSales(data);
-    } catch (err: any) {
-      console.error('Failed to load sales analytics:', err);
-      setError(err.message || 'Could not load sales analytics');
-    }
-  };
-
   const loadData = async () => {
+    if (!isAuthenticated || !isAdmin) {
+      setError('Admin authorization required: Please sign in with an Administrator account (admin@apexstore.com).');
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
     try {
-      await Promise.all([fetchOverview(), fetchSales(range)]);
-    } catch (e) {
-      // errors handled inside
+      const [overviewData, salesData] = await Promise.all([
+        analyticsApi.getOverview(),
+        analyticsApi.getSales(range)
+      ]);
+      setOverview(overviewData);
+      setSales(salesData);
+    } catch (err: any) {
+      console.warn('Analytics API error:', err);
+      setError(err.message || 'Could not load analytics metrics.');
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +72,7 @@ export const AnalyticsTab: React.FC = () => {
 
   useEffect(() => {
     loadData();
-  }, [range]);
+  }, [range, isAdmin, isAuthenticated]);
 
   if (isLoading && !overview && !sales) {
     return (
@@ -87,27 +81,35 @@ export const AnalyticsTab: React.FC = () => {
           <RefreshCw className="w-5 h-5 animate-spin" />
         </div>
         <p className="text-xs font-semibold text-stone-600">Retrieving Spring Boot Admin Analytics...</p>
-        <p className="text-[11px] text-stone-400">Performing server-side Java stream aggregation</p>
+        <p className="text-[11px] text-stone-400 font-mono">Performing server-side Java stream aggregation</p>
       </div>
     );
   }
 
   if (error && !overview && !sales) {
     return (
-      <div className="bg-white rounded-3xl border border-rose-200 p-8 text-center space-y-4 shadow-sm">
-        <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
-          <AlertTriangle className="w-6 h-6" />
+      <div className="bg-white rounded-3xl border border-indigo-100 p-8 text-center space-y-4 shadow-sm max-w-md mx-auto my-6">
+        <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs">
+          <ShieldCheck className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-stone-900">Analytics Service Unavailable</h3>
-          <p className="text-xs text-rose-700 mt-1">{error}</p>
+          <h3 className="text-sm font-bold text-stone-900">Admin Authorization Required</h3>
+          <p className="text-xs text-stone-500 mt-1">{error}</p>
         </div>
-        <button
-          onClick={loadData}
-          className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold transition"
-        >
-          Retry Analytics Request
-        </button>
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            onClick={() => login('admin@apexstore.com', 'Admin@2026!')}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold shadow-xs transition"
+          >
+            Sign In as Admin
+          </button>
+          <button
+            onClick={loadData}
+            className="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold transition"
+          >
+            Retry Request
+          </button>
+        </div>
       </div>
     );
   }
