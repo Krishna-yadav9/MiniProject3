@@ -1,0 +1,7 @@
+{
+  "name": "ApexStore - 100+ Product Catalog & Secure Admin Operations",
+  "description": "Full-scale e-commerce platform with 100+ product catalog, role-based security access control, interactive sales analytics graphs, inventory modification, and user role management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
