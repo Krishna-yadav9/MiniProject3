@@ -113,7 +113,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onNavigate }) => {
             </button>
             <button
               type="button"
-              onClick={() => fillCredentials('customer@apexstore.com', 'Customer@2026!')}
+              onClick={() => fillCredentials('customer@example.com', 'password123')}
               className="p-2 border border-stone-200 bg-stone-50/60 hover:bg-stone-100 rounded-xl text-left transition flex flex-col"
             >
               <span className="font-bold text-stone-700">Customer</span>

@@ -1,0 +1,134 @@
+{
+  "entities": {
+    "admin": {
+      "title": "Admin Credential",
+      "description": "Administrator account credentials and permissions",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique admin account ID"
+        },
+        "username": {
+          "type": "string",
+          "description": "Unique administrator username"
+        },
+        "email": {
+          "type": "string",
+          "description": "Administrator email address"
+        },
+        "passwordHash": {
+          "type": "string",
+          "description": "Stored credential password for verification"
+        },
+        "name": {
+          "type": "string",
+          "description": "Administrator full name"
+        },
+        "authority": {
+          "type": "string",
+          "description": "Spring Security granted authority (ROLE_ADMIN)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account registration timestamp"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "Last authenticated login timestamp"
+        },
+        "status": {
+          "type": "string",
+          "description": "Account status (active or suspended)"
+        },
+        "failedAttempts": {
+          "type": "number",
+          "description": "Consecutive failed login counter"
+        }
+      },
+      "required": ["id", "username", "email", "passwordHash", "authority", "status"]
+    },
+    "user": {
+      "title": "Store User",
+      "description": "Customer account profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "authority": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role", "authority"]
+    },
+    "product": {
+      "title": "Product Item",
+      "description": "Store inventory product item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "stock": { "type": "number" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "name", "price", "category", "stock"]
+    },
+    "cart": {
+      "title": "User Cart",
+      "description": "Shopping cart for a customer",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "items": { "type": "array" },
+        "total": { "type": "number" },
+        "updatedAt": { "type": "number" }
+      },
+      "required": ["id", "userId"]
+    },
+    "order": {
+      "title": "Customer Order",
+      "description": "Processed order transaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string" },
+        "shippingAddress": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "createdAt": { "type": "number" }
+      },
+      "required": ["id", "userId", "totalAmount", "status", "shippingAddress"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": "admin",
+      "description": "Collection of verified administrator credentials"
+    },
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "Collection of store users and customers"
+    },
+    "/products/{productId}": {
+      "schema": "product",
+      "description": "Store product catalog items"
+    },
+    "/carts/{cartId}": {
+      "schema": "cart",
+      "description": "Customer active shopping carts"
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Placed store orders"
+    }
+  }
+}
